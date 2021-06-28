@@ -4,24 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    /**
+     * Login.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function login(Request $request): JsonResponse
     {
         $credentials = $request->only(['email', 'password']);
-        if (!auth()->attemp($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        if (!auth()->attempt($credentials)) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
         $user = User::where('email', $credentials['email'])->first();
 
         if (!$user || !Hash::check($credentials['password'], $user->password)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
-        $token = $user->createToken('token-name')->plaintTextToken;
+        $token = $user->createToken('token-name')->plainTextToken;
 
         return $this->respondWithToken($token);
     }
@@ -31,14 +38,13 @@ class AuthController extends Controller
      *
      * @param  string $token
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     private function respondWithToken($token)
     {
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
 }
