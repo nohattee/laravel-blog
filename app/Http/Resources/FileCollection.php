@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class UserCollection extends ResourceCollection
+class FileCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -14,10 +14,10 @@ class UserCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        $users = parent::toArray($request);
+        $files = parent::toArray($request);
         return [
-            'users' => $users,
-            'total' => count($users),
+            'files' => $files,
+            'total' => count($files),
         ];
     }
 }

@@ -25,7 +25,21 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        return new UserCollection(User::paginate()->load('role'));
+        $users = User::query();
+        if ($request->input('filters')) {
+            $filters = json_decode($request->input('filters'), true);
+            $users = $users->filter($filters);
+        }
+
+        $users = $users->with('role');
+
+        if ($request->input('page')) {
+            $pageSize = $request->input('page_size', 10);
+            $users = $users->paginate($pageSize);
+        } else {
+            $users = $users->get();
+        }
+        return new UserCollection($users);
     }
 
     /**
@@ -36,16 +50,21 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate(User::$rules);
+        $user = User::create($validated);
+        return response()->json([
+            'data' => $user,
+            'message' => 'create_success',
+        ]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
         //
     }
@@ -54,22 +73,29 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        //
+        $validated = $request->validate(User::$rules);
+        $user->update($validated);
+        return response()->json([
+            'message' => 'update_success',
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        //
+        $user->delete();
+        return response()->json([
+            'message' => 'delete_success',
+        ]);
     }
 }

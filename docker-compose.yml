@@ -35,6 +35,18 @@ services:
     networks:
       - laravel-erp
 
+  phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - laravel-erp
+
 networks:
   laravel-erp:
     driver: bridge

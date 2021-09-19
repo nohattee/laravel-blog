@@ -5,12 +5,33 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Arr;
+use stdClass;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+
+    public static $rules = [
+        'name' => 'required',
+        'email' => 'required',
+        'password' => 'required',
+        'role_id' => 'required',
+    ];
+
+    /**
+     * The attributes that are filterable.
+     *
+     * @var array
+     */
+    protected $filterable = [
+        'name',
+        'email',
+        'password',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +42,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role_id',
     ];
 
     /**
@@ -51,6 +73,23 @@ class User extends Authenticatable
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = bcrypt($value);
+    }
+
+    public function scopeFilter($query, $params)
+    {
+        $results = [];
+
+        $placeholder = new stdClass;
+
+        foreach (static::$filters as $filter) {
+            $value = data_get($params, $filter, $placeholder);
+
+            if ($value !== $placeholder) {
+                Arr::set($results, $filter, $value);
+            }
+        }
+
+        return $query->where($results);
     }
 
     /**
