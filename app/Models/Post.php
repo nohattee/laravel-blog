@@ -4,17 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
-    /**
-     * The categories that belong to the post.
-     */
-    public function categories()
-    {
-        return $this->belongsToMany(PostCategory::class);
-    }
+    public static $rules = [
+        'title' => 'required',
+        'content' => 'required',
+        'slug' => 'URL',
+        'thumbnail' => 'URL',
+        'author_id' => 'integer',
+        'post_categories' => 'array',
+    ];
 }

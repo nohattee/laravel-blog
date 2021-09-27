@@ -30,8 +30,6 @@ class PostCategoryController extends Controller
     {
         $validated = $request->validate(PostCategory::$rules);
 
-        // $category = PostCategory::create($validated);
-
         DB::beginTransaction();
 
         try {

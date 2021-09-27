@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -14,7 +16,7 @@ class PostCategory extends Model
     public static $rules = [
         'name' => 'required',
         'description' => '',
-        'parent_id' => 'integer|nullable'
+        'parent_id' => 'integer'
     ];
 
     /**
@@ -25,16 +27,28 @@ class PostCategory extends Model
     protected static function booted()
     {
         static::created(function ($category) {
-            TreePath::create([
-                'descendant_id' => $category->id,
-                'ancestor_id' => $category->id,
-                'entity_type' => self::class,
-            ]);
-            $category->createTreePath($category->parent_id);
+            DB::beginTransaction();
+            try {
+                TreePath::create([
+                    'descendant_id' => $category->id,
+                    'ancestor_id' => $category->id,
+                    'entity_type' => self::class,
+                ]);
+                $category->createTreePath($category->parent_id);
+            } catch (Exception $e) {
+                DB::rollback();
+            }
+            DB::commit();
         });
 
         static::updated(function ($category) {
-            $category->updateTreePath($category->parent_id);
+            DB::beginTransaction();
+            try {
+                $category->updateTreePath($category->parent_id);
+            } catch (Exception $e) {
+                DB::rollback();
+            }
+            DB::commit();
         });
     }
 
