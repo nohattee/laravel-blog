@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
             'password' => '1qaz@WSX'
         ]);
 
-        User::factory(50)->create([
+        User::factory(20)->create([
             'role_id' => 2
         ]);
     }

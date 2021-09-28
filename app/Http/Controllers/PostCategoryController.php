@@ -30,16 +30,7 @@ class PostCategoryController extends Controller
     {
         $validated = $request->validate(PostCategory::$rules);
 
-        DB::beginTransaction();
-
-        try {
-            $category = PostCategory::create($validated);
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-
-        DB::commit();
+        $category = PostCategory::create($validated);
 
         return response()->json([
             'data' => $category,

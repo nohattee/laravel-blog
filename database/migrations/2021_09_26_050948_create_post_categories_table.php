@@ -16,6 +16,7 @@ class CreatePostCategoriesTable extends Migration
         Schema::create('post_categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('slug');
             $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();

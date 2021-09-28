@@ -3,15 +3,18 @@
 namespace App\Models;
 
 use Exception;
+use App\Traits\Sluggable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PostCategory extends Model
 {
-    use HasFactory;
+    use HasFactory, Sluggable;
 
     private int $parent_id = 0;
+
+    protected $generateSlugFrom = 'name';
 
     public static $rules = [
         'name' => 'required',
@@ -29,11 +32,6 @@ class PostCategory extends Model
         static::created(function ($category) {
             DB::beginTransaction();
             try {
-                TreePath::create([
-                    'descendant_id' => $category->id,
-                    'ancestor_id' => $category->id,
-                    'entity_type' => self::class,
-                ]);
                 $category->createTreePath($category->parent_id);
             } catch (Exception $e) {
                 DB::rollback();
@@ -118,6 +116,11 @@ class PostCategory extends Model
      */
     private function createTreePath(int $parent_id)
     {
+        TreePath::create([
+            'descendant_id' => $this->id,
+            'ancestor_id' => $this->id,
+            'entity_type' => self::class,
+        ]);
         $treePaths = TreePath::where('descendant_id', $parent_id)
             ->where('descendant_id', '<>', $this->id)
             ->where('entity_type', self::class)
@@ -136,8 +139,7 @@ class PostCategory extends Model
      */
     private function updateTreePath(int $parent_id)
     {
-        TreePath::where('ancestor_id', $this->id)
-            ->where('descendant_id', '<>', $this->id)
+        TreePath::where('descendant_id', $this->id)
             ->where('entity_type', self::class)
             ->delete();
 

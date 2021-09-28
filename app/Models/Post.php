@@ -2,19 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\Sluggable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Post extends Model
 {
-    use HasFactory;
+    use HasFactory, Sluggable;
+
+    protected $generateSlugFrom = 'title';
 
     public static $rules = [
         'title' => 'required',
         'content' => 'required',
-        'slug' => 'URL',
+        'slug' => '',
         'thumbnail' => 'URL',
         'author_id' => 'integer',
+        'post_status' => '',
         'post_categories' => 'array',
     ];
 }
