@@ -37,4 +37,35 @@ class PostCategoryController extends Controller
             'message' => 'create_success',
         ]);
     }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  PostCategory  $category
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, PostCategory $category)
+    {
+        $validated = $request->validate(PostCategory::$rules);
+
+        $category->update($validated);
+        return response()->json([
+            'message' => 'update_success',
+        ]);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  PostCategory  $category
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(PostCategory $category)
+    {
+        $category->delete();
+        return response()->json([
+            'message' => 'delete_success',
+        ]);
+    }
 }

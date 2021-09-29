@@ -21,4 +21,26 @@ class Post extends Model
         'post_status' => '',
         'post_categories' => 'array',
     ];
+
+    public function scopeFilter($query, $params)
+    {
+        $results = [];
+
+        $placeholder = new stdClass;
+
+        foreach (static::$filters as $filter) {
+            $value = data_get($params, $filter, $placeholder);
+
+            if ($value !== $placeholder) {
+                Arr::set($results, $filter, $value);
+            }
+        }
+
+        return $query->where($results);
+    }
+
+    public function author() 
+    {
+        return $this->belongsTo(User::class);
+    }
 }

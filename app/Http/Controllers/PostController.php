@@ -16,6 +16,7 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $posts = Post::query();
+
         if ($request->input('filters')) {
             $filters = json_decode($request->input('filters'), true);
             $posts = $posts->filter($filters);
@@ -25,8 +26,9 @@ class PostController extends Controller
             $pageSize = $request->input('page_size', 10);
             $posts = $posts->paginate($pageSize);
         } else {
-            $posts = $posts->get();
+            $posts = $posts->with('author')->get();
         }
+
         return new PostCollection($posts);
     }
 
