@@ -22,6 +22,31 @@ class Post extends Model
         'post_categories' => 'array',
     ];
 
+    /**
+     * The attributes that are filterable.
+     *
+     * @var array
+     */
+    protected $filterable = [
+        'title',
+        'slug',
+        'post_status',
+    ];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'title',
+        'content',
+        'slug',
+        'thumbnail',
+        'post_status',
+        'author_id',
+    ];
+
     public function scopeFilter($query, $params)
     {
         $results = [];
@@ -39,7 +64,7 @@ class Post extends Model
         return $query->where($results);
     }
 
-    public function author() 
+    public function author()
     {
         return $this->belongsTo(User::class);
     }
