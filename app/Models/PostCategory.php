@@ -12,7 +12,7 @@ class PostCategory extends Model
 {
     use HasFactory, Sluggable;
 
-    private int $parent_id = 0;
+    private $parent_id = 0;
 
     protected $generateSlugFrom = 'name';
 

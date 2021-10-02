@@ -15,7 +15,7 @@ class Post extends Model
     public static $rules = [
         'title' => 'required',
         'content' => 'required',
-        'slug' => '',
+        'slug' => 'required',
         'thumbnail' => 'URL',
         'author_id' => 'integer',
         'post_status' => '',
