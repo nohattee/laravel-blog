@@ -28,7 +28,6 @@ class AuthController extends Controller
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
-        $user->tokens()->delete();
         $token = $user->createToken(env('SANCTUM_TOKEN_NAME'))->plainTextToken;
 
         return $this->respondWithToken($token);
@@ -44,8 +43,13 @@ class AuthController extends Controller
     private function respondWithToken($token)
     {
         return response()->json([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
+            'message' => 'Login',
+            'data' => [
+                'user' => auth()->user(),
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+            ]
+
         ]);
     }
 }

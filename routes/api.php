@@ -24,9 +24,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::apiResource('users', UserController::class);
+    Route::apiResource('files', FileController::class);
+    Route::apiResource('posts', PostController::class);
+    Route::apiResource('post-categories', PostCategoryController::class);
 });
-Route::apiResource('files', FileController::class);
-Route::apiResource('posts', PostController::class);
-Route::apiResource('post-categories', PostCategoryController::class);
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+
+Route::group(['prefix' => 'auth'], function () {
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
+});
