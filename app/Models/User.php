@@ -17,9 +17,11 @@ class User extends Authenticatable
 
     public static $rules = [
         'name' => 'required',
-        'email' => 'required',
+        'email' => 'required|email',
         'password' => 'required',
-        'role_id' => 'required',
+        'birthdate' => 'date',
+        'avatar' => 'URL',
+        'roles' => 'array',
     ];
 
     /**
@@ -30,7 +32,7 @@ class User extends Authenticatable
     protected $filterable = [
         'name',
         'email',
-        'password',
+        'birthdate',
     ];
 
     /**
@@ -42,7 +44,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role_id',
+        'avatar',
+        'birthdate',
+        'roles',
     ];
 
     /**
@@ -75,6 +79,11 @@ class User extends Authenticatable
         $this->attributes['password'] = bcrypt($value);
     }
 
+    public function setRolesAttribute($value)
+    {
+        $this->roles()->sync($value);
+    }
+
     public function scopeFilter($query, $params)
     {
         $results = [];
@@ -93,25 +102,24 @@ class User extends Authenticatable
     }
 
     /**
-     * The role that belong to the user.
+     * The roles that belong to the user.
      */
-    public function role()
+    public function roles()
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsToMany(Role::class, 'user_role');
     }
 
     /**
-     * The role that belong to the user.
+     * TODO
      */
-    public function hasPermissions(...$permissions): bool
+    public function hasPermissionTo(...$permissions): bool
     {
-        $permissions = collect($permissions)->flatten();
+        $roles = $this->roles->with('permissions');
 
-        $rolePermissions = $this->role->permissions;
-
-        foreach ($permissions as $permission) {
-            if (in_array('*', $rolePermissions) ||
-                array_key_exists($permission, array_flip($rolePermissions))) {
+        foreach ($roles as $role) {
+            if (
+                $role->hasPermissionTo($permissions)
+            ) {
                 return true;
             }
         }

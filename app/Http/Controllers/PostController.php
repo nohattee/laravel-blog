@@ -9,6 +9,16 @@ use App\Http\Resources\PostCollection;
 class PostController extends Controller
 {
     /**
+     * Create the controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(File::class, 'post');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -48,7 +58,7 @@ class PostController extends Controller
         ]);
     }
 
-     /**
+    /**
      * Display the specified resource.
      *
      * @param  Post  $post

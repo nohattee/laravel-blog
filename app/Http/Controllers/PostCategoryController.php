@@ -2,14 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
 use App\Models\PostCategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Resources\PostCategoryCollection;
 
 class PostCategoryController extends Controller
 {
+    /**
+     * Create the controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(File::class, 'post-category');
+    }
+
     /**
      * Display a listing of the resource.
      *

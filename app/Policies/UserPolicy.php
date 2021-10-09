@@ -17,7 +17,7 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->hasPermissions('user.index');
+        return $user->hasPermissionTo('view-user');
     }
 
     /**
@@ -29,7 +29,9 @@ class UserPolicy
      */
     public function view(User $user, User $model)
     {
-        return $user->hasPermissions('user.index');
+        if ($user->hasPermissionTo('view-user')) return true;
+        if ($user->id == $model->id) return true;
+        return false;
     }
 
     /**
@@ -40,7 +42,7 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        return $user->hasPermissions('user.store');
+        return $user->hasPermissionTo('create-user');
     }
 
     /**
@@ -52,7 +54,9 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
-        return $user->hasPermissions('user.update');
+        if ($user->hasPermissionTo('update-user')) return true;
+        if ($user->id == $model->id) return true;
+        return false;
     }
 
     /**
@@ -64,7 +68,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model)
     {
-        return $user->hasPermissions('user.destroy');
+        return $user->hasPermissionTo('delete-user');
     }
 
     /**

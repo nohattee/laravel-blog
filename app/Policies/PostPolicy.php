@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Role;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class RolePolicy
+class PostPolicy
 {
     use HandlesAuthorization;
 
@@ -18,17 +18,17 @@ class RolePolicy
      */
     public function viewAny(User $user)
     {
-        return $user->hasPermissionTo('view-role');
+        //
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Role  $role
+     * @param  \App\Models\Post  $post
      * @return mixed
      */
-    public function view(User $user, Role $role)
+    public function view(User $user, Post $post)
     {
         //
     }
@@ -41,41 +41,45 @@ class RolePolicy
      */
     public function create(User $user)
     {
-        return $user->hasPermissionTo('create-role');
+        return $user->hasPermissionTo('create-post');
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Role  $role
+     * @param  \App\Models\Post  $post
      * @return mixed
      */
-    public function update(User $user, Role $role)
+    public function update(User $user, Post $post)
     {
-        return $user->hasPermissionTo('update-role');
+        if ($user->hasPermissionTo('update-post')) return true;
+        if ($user->id == $post->author_id) return true;
+        return false;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Role  $role
+     * @param  \App\Models\Post  $post
      * @return mixed
      */
-    public function delete(User $user, Role $role)
+    public function delete(User $user, Post $post)
     {
-        return $user->hasPermissionTo('delete-role');
+        if ($user->hasPermissionTo('delete-post')) return true;
+        if ($user->posts->contain($post)) return true;
+        return false;
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Role  $role
+     * @param  \App\Models\Post  $post
      * @return mixed
      */
-    public function restore(User $user, Role $role)
+    public function restore(User $user, Post $post)
     {
         //
     }
@@ -84,10 +88,10 @@ class RolePolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Role  $role
+     * @param  \App\Models\Post  $post
      * @return mixed
      */
-    public function forceDelete(User $user, Role $role)
+    public function forceDelete(User $user, Post $post)
     {
         //
     }

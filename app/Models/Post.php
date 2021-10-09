@@ -45,6 +45,7 @@ class Post extends Model
         'thumbnail',
         'post_status',
         'author_id',
+        'post_categories',
     ];
 
     public function scopeFilter($query, $params)

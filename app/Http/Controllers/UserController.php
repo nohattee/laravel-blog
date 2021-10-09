@@ -31,7 +31,7 @@ class UserController extends Controller
             $users = $users->filter($filters);
         }
 
-        $users = $users->with('role');
+        $users = $users->with('roles');
 
         if ($request->input('page')) {
             $pageSize = $request->input('page_size', 10);
