@@ -52,6 +52,7 @@ class DatabaseSeeder extends Seeder
                 }
             }
         } catch (Exception $e) {
+            dump($e);
             DB::rollBack();
         }
 

@@ -24,7 +24,7 @@ class Role extends Model
      */
     public function permissions()
     {
-        return $this->belongsToMany(Permission::class);
+        return $this->belongsToMany(Permission::class, 'role_permission');
     }
 
     public function hasPermissionTo(...$permissions): bool
@@ -33,7 +33,7 @@ class Role extends Model
 
         foreach ($permissions as $permission) {
             if (
-                $this->permissions->contain('slug', $permission)
+                $this->permissions->contains('slug', $permission)
             ) {
                 return true;
             }

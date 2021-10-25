@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\Filterable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Support\Arr;
-use stdClass;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, Filterable;
 
     public static $rules = [
         'name' => 'required',
@@ -84,23 +83,6 @@ class User extends Authenticatable
         $this->roles()->sync($value);
     }
 
-    public function scopeFilter($query, $params)
-    {
-        $results = [];
-
-        $placeholder = new stdClass;
-
-        foreach (static::$filters as $filter) {
-            $value = data_get($params, $filter, $placeholder);
-
-            if ($value !== $placeholder) {
-                Arr::set($results, $filter, $value);
-            }
-        }
-
-        return $query->where($results);
-    }
-
     /**
      * The roles that belong to the user.
      */
@@ -114,7 +96,7 @@ class User extends Authenticatable
      */
     public function hasPermissionTo(...$permissions): bool
     {
-        $roles = $this->roles->with('permissions');
+        $roles = $this->roles()->with('permissions')->get();
 
         foreach ($roles as $role) {
             if (

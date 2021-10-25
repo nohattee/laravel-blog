@@ -15,7 +15,7 @@ class PostController extends Controller
      */
     public function __construct()
     {
-        $this->authorizeResource(File::class, 'post');
+        $this->authorizeResource(Post::class, 'post');
     }
 
     /**
@@ -26,20 +26,8 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $posts = Post::query();
-
-        if ($request->input('filters')) {
-            $filters = json_decode($request->input('filters'), true);
-            $posts = $posts->filter($filters);
-        }
-
-        if ($request->input('page')) {
-            $pageSize = $request->input('page_size', 10);
-            $posts = $posts->paginate($pageSize);
-        } else {
-            $posts = $posts->with('author')->get();
-        }
-
-        return new PostCollection($posts);
+        $posts = $this->filter($posts, $request);
+        return new PostCollection($posts->with('categories')->get());
     }
 
     /**
@@ -53,9 +41,9 @@ class PostController extends Controller
         $validated = $request->validate(Post::$rules);
         $post = Post::create($validated);
         return response()->json([
-            'data' => $post,
+            'data' => $post->load('categories'),
             'message' => 'create_success',
-        ]);
+        ], 201);
     }
 
     /**
