@@ -5,16 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\PostCategory;
 use Illuminate\Http\Request;
 use App\Http\Resources\PostCategoryCollection;
+use App\UseCases\PostCategoryUseCase;
 
 class PostCategoryController extends Controller
 {
+    /**
+     * @var $postCategoryUseCase
+     */
+    protected $postCategoryUseCase;
+    
     /**
      * Create the controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(PostCategoryUseCase $postCategoryUseCase)
     {
+        $this->postCategoryUseCase = $postCategoryUseCase;
         $this->authorizeResource(File::class, 'post-category');
     }
 
@@ -36,9 +43,7 @@ class PostCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate(PostCategory::$rules);
-
-        $category = PostCategory::create($validated);
+        $category = $this->postCategoryUseCase->create($request->all());
 
         return response()->json([
             'data' => $category,
@@ -55,9 +60,7 @@ class PostCategoryController extends Controller
      */
     public function update(Request $request, PostCategory $category)
     {
-        $validated = $request->validate(PostCategory::$rules);
-
-        $category->update($validated);
+        $this->postCategoryUseCase->update($request->all(), $category);
         return response()->json([
             'message' => 'update_success',
         ]);
