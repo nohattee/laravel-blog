@@ -2,24 +2,25 @@
 
 namespace App\Models;
 
+use App\Traits\Filterable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Support\Arr;
-use stdClass;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, Filterable;
 
     public static $rules = [
         'name' => 'required',
-        'email' => 'required',
+        'email' => 'required|email',
         'password' => 'required',
-        'role_id' => 'required',
+        'birthdate' => 'date',
+        'avatar' => 'URL',
+        'roles' => 'array',
     ];
 
     /**
@@ -30,7 +31,7 @@ class User extends Authenticatable
     protected $filterable = [
         'name',
         'email',
-        'password',
+        'birthdate',
     ];
 
     /**
@@ -42,7 +43,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role_id',
+        'avatar',
+        'birthdate',
+        'roles',
     ];
 
     /**
@@ -75,43 +78,30 @@ class User extends Authenticatable
         $this->attributes['password'] = bcrypt($value);
     }
 
-    public function scopeFilter($query, $params)
+    public function setRolesAttribute($value)
     {
-        $results = [];
-
-        $placeholder = new stdClass;
-
-        foreach (static::$filters as $filter) {
-            $value = data_get($params, $filter, $placeholder);
-
-            if ($value !== $placeholder) {
-                Arr::set($results, $filter, $value);
-            }
-        }
-
-        return $query->where($results);
+        $this->roles()->sync($value);
     }
 
     /**
-     * The role that belong to the user.
+     * The roles that belong to the user.
      */
-    public function role()
+    public function roles()
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsToMany(Role::class, 'user_role');
     }
 
     /**
-     * The role that belong to the user.
+     * TODO
      */
-    public function hasPermissions(...$permissions): bool
+    public function hasPermissionTo(...$permissions): bool
     {
-        $permissions = collect($permissions)->flatten();
+        $roles = $this->roles()->with('permissions')->get();
 
-        $rolePermissions = $this->role->permissions;
-
-        foreach ($permissions as $permission) {
-            if (in_array('*', $rolePermissions) ||
-                array_key_exists($permission, array_flip($rolePermissions))) {
+        foreach ($roles as $role) {
+            if (
+                $role->hasPermissionTo($permissions)
+            ) {
                 return true;
             }
         }

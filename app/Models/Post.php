@@ -2,20 +2,26 @@
 
 namespace App\Models;
 
+use Exception;
 use App\Traits\Sluggable;
+use App\Traits\Filterable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Post extends Model
 {
-    use HasFactory, Sluggable;
+    use HasFactory, Sluggable, Filterable, SoftDeletes;
+
+    private $post_categories = [];
 
     protected $generateSlugFrom = 'title';
 
     public static $rules = [
         'title' => 'required',
         'content' => 'required',
-        'slug' => 'required',
+        'slug' => '',
         'thumbnail' => 'URL',
         'author_id' => 'integer',
         'post_status' => '',
@@ -45,27 +51,44 @@ class Post extends Model
         'thumbnail',
         'post_status',
         'author_id',
+        'post_categories',
     ];
 
-    public function scopeFilter($query, $params)
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
     {
-        $results = [];
-
-        $placeholder = new stdClass;
-
-        foreach (static::$filters as $filter) {
-            $value = data_get($params, $filter, $placeholder);
-
-            if ($value !== $placeholder) {
-                Arr::set($results, $filter, $value);
+        static::saved(function ($post) {
+            if (empty($post->post_categories)) {
+                return;
             }
-        }
 
-        return $query->where($results);
+            DB::beginTransaction();
+            try {
+                $post->categories()->sync($post->post_categories);
+            } catch (Exception $e) {
+                DB::rollback();
+                dd($e);
+            }
+            DB::commit();
+        });
+    }
+
+    public function setPostCategoriesAttribute(array $value) 
+    {
+        $this->post_categories = $value;
     }
 
     public function author()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function categories() 
+    {
+        return $this->belongsToMany(PostCategory::class, 'post_post_categories');
     }
 }

@@ -12,14 +12,12 @@ class PostCategory extends Model
 {
     use HasFactory, Sluggable;
 
-    private $parent_id = 0;
-
     protected $generateSlugFrom = 'name';
 
     public static $rules = [
         'name' => 'required',
         'description' => '',
-        'parent_id' => 'integer'
+        'parent_id' => 'nullable|exists:post_categories,id'
     ];
 
     /**
@@ -32,7 +30,7 @@ class PostCategory extends Model
         static::created(function ($category) {
             DB::beginTransaction();
             try {
-                $category->createTreePath($category->parent_id);
+                $category->createTreePath();
             } catch (Exception $e) {
                 DB::rollback();
             }
@@ -42,7 +40,7 @@ class PostCategory extends Model
         static::updated(function ($category) {
             DB::beginTransaction();
             try {
-                $category->updateTreePath($category->parent_id);
+                $category->updateTreePath();
             } catch (Exception $e) {
                 DB::rollback();
             }
@@ -60,17 +58,6 @@ class PostCategory extends Model
         'description',
         'parent_id',
     ];
-
-    /**
-     * Set the post category's parent id.
-     *
-     * @param  int  $value
-     * @return void
-     */
-    public function setParentIdAttribute(int $value)
-    {
-        $this->parent_id = $value;
-    }
 
     /**
      * The posts that belong to the category.
@@ -114,14 +101,14 @@ class PostCategory extends Model
     /**
      * TODO
      */
-    private function createTreePath(int $parent_id)
+    private function createTreePath()
     {
         TreePath::create([
             'descendant_id' => $this->id,
             'ancestor_id' => $this->id,
             'entity_type' => self::class,
         ]);
-        $treePaths = TreePath::where('descendant_id', $parent_id)
+        $treePaths = TreePath::where('descendant_id', $this->parent_id)
             ->where('descendant_id', '<>', $this->id)
             ->where('entity_type', self::class)
             ->get();
@@ -137,12 +124,12 @@ class PostCategory extends Model
     /**
      * TODO
      */
-    private function updateTreePath(int $parent_id)
+    private function updateTreePath()
     {
         TreePath::where('descendant_id', $this->id)
             ->where('entity_type', self::class)
             ->delete();
 
-        $this->createTreePath($parent_id);
+        $this->createTreePath();
     }
 }

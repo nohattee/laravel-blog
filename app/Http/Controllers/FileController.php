@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\Storage;
 class FileController extends Controller
 {
     /**
+     * Create the controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(File::class, 'file');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -29,7 +39,7 @@ class FileController extends Controller
         } else {
             $files = $files->get();
         }
-        
+
         return new FileCollection($files);
     }
 

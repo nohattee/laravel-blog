@@ -3,12 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Role extends Model
 {
-    use SoftDeletes, HasFactory;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -17,15 +16,28 @@ class Role extends Model
      */
     protected $fillable = [
         'name',
-        'permissions',
     ];
 
+
     /**
-     * The attributes that should be cast.
-     *
-     * @var array
+     * The permissions that belong to the role.
      */
-    protected $casts = [
-        'permissions' => 'array',
-    ];
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'role_permission');
+    }
+
+    public function hasPermissionTo(...$permissions): bool
+    {
+        $permissions = collect($permissions)->flatten();
+
+        foreach ($permissions as $permission) {
+            if (
+                $this->permissions->contains('slug', $permission)
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

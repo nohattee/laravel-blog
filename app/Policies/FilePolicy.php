@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Role;
+use App\Models\File;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class RolePolicy
+class FilePolicy
 {
     use HandlesAuthorization;
 
@@ -18,17 +18,17 @@ class RolePolicy
      */
     public function viewAny(User $user)
     {
-        return $user->hasPermissionTo('view-role');
+        return $user->hasPermissionTo('view-file');
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Role  $role
+     * @param  \App\Models\File  $file
      * @return mixed
      */
-    public function view(User $user, Role $role)
+    public function view(User $user, File $file)
     {
         //
     }
@@ -41,41 +41,41 @@ class RolePolicy
      */
     public function create(User $user)
     {
-        return $user->hasPermissionTo('create-role');
+        return $user->hasPermissionTo('create-file');
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Role  $role
+     * @param  \App\Models\File  $file
      * @return mixed
      */
-    public function update(User $user, Role $role)
+    public function update(User $user, File $file)
     {
-        return $user->hasPermissionTo('update-role');
+        //
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Role  $role
+     * @param  \App\Models\File  $file
      * @return mixed
      */
-    public function delete(User $user, Role $role)
+    public function delete(User $user, File $file)
     {
-        return $user->hasPermissionTo('delete-role');
+        return $user->hasPermissionTo('delete-file');
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Role  $role
+     * @param  \App\Models\File  $file
      * @return mixed
      */
-    public function restore(User $user, Role $role)
+    public function restore(User $user, File $file)
     {
         //
     }
@@ -84,10 +84,10 @@ class RolePolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Role  $role
+     * @param  \App\Models\File  $file
      * @return mixed
      */
-    public function forceDelete(User $user, Role $role)
+    public function forceDelete(User $user, File $file)
     {
         //
     }

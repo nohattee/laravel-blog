@@ -2,27 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PostCategory;
+use App\Models\Product;
 use Illuminate\Http\Request;
-use App\Http\Resources\PostCategoryCollection;
-use App\UseCases\PostCategoryUseCase;
+use App\Http\Resources\ProductCollection;
 
-class PostCategoryController extends Controller
+class ProductController extends Controller
 {
-    /**
-     * @var $postCategoryUseCase
-     */
-    protected $postCategoryUseCase;
-    
     /**
      * Create the controller instance.
      *
      * @return void
      */
-    public function __construct(PostCategoryUseCase $postCategoryUseCase)
+    public function __construct()
     {
-        $this->postCategoryUseCase = $postCategoryUseCase;
-        $this->authorizeResource(File::class, 'post-category');
+        $this->authorizeResource(Product::class, 'product');
     }
 
     /**
@@ -32,7 +25,9 @@ class PostCategoryController extends Controller
      */
     public function index(Request $request)
     {
-        return new PostCategoryCollection(PostCategory::has('ancestors', '=', 1)->with('descendants')->get());
+        $products = Product::query();
+        $products = $this->filter($products, $request);
+        return new ProductCollection($products);
     }
 
     /**
@@ -43,24 +38,36 @@ class PostCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $category = $this->postCategoryUseCase->create($request->all());
-
+        $validated = $request->validate(Product::$rules);
+        $product = Product::create($validated);
         return response()->json([
-            'data' => $category,
+            'data' => $product->load('categories'),
             'message' => 'create_success',
-        ]);
+        ], 201);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Product $product)
+    {
+        //
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  PostCategory  $category
+     * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PostCategory $category)
+    public function update(Request $request, Product $product)
     {
-        $this->postCategoryUseCase->update($request->all(), $category);
+        $validated = $request->validate(Product::$rules);
+        $product->update($validated);
         return response()->json([
             'message' => 'update_success',
         ]);
@@ -69,12 +76,12 @@ class PostCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  PostCategory  $category
+     * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PostCategory $category)
+    public function destroy(Product $product)
     {
-        $category->delete();
+        $product->delete();
         return response()->json([
             'message' => 'delete_success',
         ]);
