@@ -18,7 +18,8 @@ class CreateTreePathsTable extends Migration
             $table->foreignId('descendant_id');
             $table->string('entity_type');
             $table->timestamps();
-
+            $table->softDeletes();
+            
             $table->primary(['ancestor_id', 'descendant_id', 'entity_type']);
         });
     }

@@ -14,6 +14,8 @@ class PostCategorySeeder extends Seeder
      */
     public function run()
     {
-        PostCategory::factory(20)->create();
+        for ($i = 0; $i < 20; $i++) {
+            PostCategory::factory()->create();
+        }
     }
 }

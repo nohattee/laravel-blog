@@ -26,19 +26,8 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $users = User::query();
-        if ($request->input('filters')) {
-            $filters = json_decode($request->input('filters'), true);
-            $users = $users->filter($filters);
-        }
-
-        $users = $users->with('roles');
-
-        if ($request->input('page')) {
-            $pageSize = $request->input('page_size', 10);
-            $users = $users->paginate($pageSize);
-        } else {
-            $users = $users->get();
-        }
+        $users = $this->filter($users, $request);
+        $users = $users->with('roles')->get();
         return new UserCollection($users);
     }
 

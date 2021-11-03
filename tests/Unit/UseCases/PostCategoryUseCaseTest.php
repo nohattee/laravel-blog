@@ -99,6 +99,10 @@ class PostCategoryUseCaseTest extends TestCase
 
         $uc = new PostCategoryUseCase(new PostCategory());
         $uc->update($input, $postCategory);
+        $this->assertDatabaseHas('post_categories', [
+            'name' => $input['name'],
+            'description' => $input['description'],
+        ]);
         $this->assertDatabaseHas('tree_paths', [
             'ancestor_id' => $parent->id,
             'descendant_id' => $postCategory->id,
@@ -113,21 +117,18 @@ class PostCategoryUseCaseTest extends TestCase
      */
     public function test_it_can_update_post_category_without_parent_id()
     {
-        $parent = PostCategory::factory()->create();
-        $postCategory = PostCategory::factory()->create([
-            "parent_id" => null,
-        ]);
+        $postCategory = PostCategory::factory()->create();
 
-        $input = PostCategory::factory()->raw([
-            "parent_id" => $parent->id,
-        ]);
+        $input = [
+            'name' => $this->faker->word,
+            'description' => $this->faker->text(),
+        ];
 
         $uc = new PostCategoryUseCase(new PostCategory());
         $uc->update($input, $postCategory);
-        $this->assertDatabaseHas('tree_paths', [
-            'ancestor_id' => $parent->id,
-            'descendant_id' => $postCategory->id,
-            'entity_type' => PostCategory::class,
+        $this->assertDatabaseHas('post_categories', [
+            'name' => $input['name'],
+            'description' => $input['description'],
         ]);
     }
 }

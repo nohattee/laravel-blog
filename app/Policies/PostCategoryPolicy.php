@@ -65,7 +65,7 @@ class PostCategoryPolicy
      */
     public function delete(User $user, PostCategory $postCategory)
     {
-        return $user->hasPermissionTo('delete-post-category');
+        // return $user->hasPermissionTo('delete-post-category');
     }
 
     /**
