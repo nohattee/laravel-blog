@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\PostCategory;
 use Illuminate\Http\Request;
-use App\Http\Resources\PostCategoryCollection;
 use App\UseCases\PostCategoryUseCase;
+use App\Http\Resources\PostCategoryCollection;
 
 class PostCategoryController extends Controller
 {
@@ -22,7 +22,7 @@ class PostCategoryController extends Controller
     public function __construct(PostCategoryUseCase $postCategoryUseCase)
     {
         $this->postCategoryUseCase = $postCategoryUseCase;
-        $this->authorizeResource(File::class, 'post-category');
+        $this->authorizeResource(PostCategory::class, 'post-category');
     }
 
     /**
@@ -55,12 +55,12 @@ class PostCategoryController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  PostCategory  $category
+     * @param  PostCategory  $postCategory
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PostCategory $category)
+    public function update(Request $request, PostCategory $postCategory)
     {
-        $this->postCategoryUseCase->update($request->all(), $category);
+        $this->postCategoryUseCase->update($request->all(), $postCategory);
         return response()->json([
             'message' => 'update_success',
         ]);
@@ -69,12 +69,12 @@ class PostCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  PostCategory  $category
+     * @param  PostCategory  $postCategory
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PostCategory $category)
+    public function destroy(PostCategory $postCategory)
     {
-        $category->delete();
+        $postCategory->delete();
         return response()->json([
             'message' => 'delete_success',
         ]);

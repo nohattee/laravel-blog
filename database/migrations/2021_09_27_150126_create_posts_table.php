@@ -19,7 +19,7 @@ class CreatePostsTable extends Migration
             $table->longText('content');
             $table->string('slug');
             $table->string('thumbnail');
-            $table->enum('post_status', ['private', 'public'])->default('private');
+            $table->string('post_status');
             $table->timestamp('published_at')->nullable();
             $table->foreignId('author_id');
             $table->timestamps();

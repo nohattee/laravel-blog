@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\PostCategoryController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\PurchasedItemController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -28,6 +29,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         'posts' => PostController::class,
         'post-categories' => PostCategoryController::class,
         'files' => FileController::class,
+        'purchased-items' => PurchasedItemController::class,
     ]);
 });
 

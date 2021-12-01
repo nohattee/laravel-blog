@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\PostCategory;
 use Illuminate\Database\Seeder;
 
-class PostCategorySeeder extends Seeder
+class PurchasedItemSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,8 +13,6 @@ class PostCategorySeeder extends Seeder
      */
     public function run()
     {
-        for ($i = 0; $i < 20; $i++) {
-            PostCategory::factory()->create();
-        }
+        //
     }
 }

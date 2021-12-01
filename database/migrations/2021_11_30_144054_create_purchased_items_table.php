@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTreePathsTable extends Migration
+class CreatePurchasedItemsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,12 @@ class CreateTreePathsTable extends Migration
      */
     public function up()
     {
-        Schema::create('tree_paths', function (Blueprint $table) {
-            $table->foreignId('ancestor_id');
-            $table->foreignId('descendant_id');
-            $table->string('entity_type');
+        Schema::create('purchased_items', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->decimal('price');
             $table->timestamps();
             $table->softDeletes();
-            
-            $table->primary(['ancestor_id', 'descendant_id', 'entity_type']);
         });
     }
 
@@ -31,6 +29,6 @@ class CreateTreePathsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tree_paths');
+        Schema::dropIfExists('purchased_items');
     }
 }

@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\PostCategory;
+use App\Models\PurchasedItem;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class PostCategoryPolicy
+class PurchasedItemPolicy
 {
     use HandlesAuthorization;
 
@@ -14,7 +14,7 @@ class PostCategoryPolicy
      * Determine whether the user can view any models.
      *
      * @param  \App\Models\User  $user
-     * @return mixed
+     * @return \Illuminate\Auth\Access\Response|bool
      */
     public function viewAny(User $user)
     {
@@ -25,10 +25,10 @@ class PostCategoryPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\PostCategory  $postCategory
-     * @return mixed
+     * @param  \App\Models\PurchasedItem  $purchasedItem
+     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, PostCategory $postCategory)
+    public function view(User $user, PurchasedItem $purchasedItem)
     {
         //
     }
@@ -37,45 +37,45 @@ class PostCategoryPolicy
      * Determine whether the user can create models.
      *
      * @param  \App\Models\User  $user
-     * @return mixed
+     * @return \Illuminate\Auth\Access\Response|bool
      */
     public function create(User $user)
     {
-        return $user->hasPermissionTo('create-post-category');
+        //
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\PostCategory  $postCategory
-     * @return mixed
+     * @param  \App\Models\PurchasedItem  $purchasedItem
+     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, PostCategory $postCategory)
+    public function update(User $user, PurchasedItem $purchasedItem)
     {
-        return $user->hasPermissionTo('update-post-category');
+        //
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\PostCategory  $postCategory
-     * @return mixed
+     * @param  \App\Models\PurchasedItem  $purchasedItem
+     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, PostCategory $postCategory)
+    public function delete(User $user, PurchasedItem $purchasedItem)
     {
-        // return $user->hasPermissionTo('delete-post-category');
+        //
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\PostCategory  $postCategory
-     * @return mixed
+     * @param  \App\Models\PurchasedItem  $purchasedItem
+     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, PostCategory $postCategory)
+    public function restore(User $user, PurchasedItem $purchasedItem)
     {
         //
     }
@@ -84,10 +84,10 @@ class PostCategoryPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\PostCategory  $postCategory
-     * @return mixed
+     * @param  \App\Models\PurchasedItem  $purchasedItem
+     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, PostCategory $postCategory)
+    public function forceDelete(User $user, PurchasedItem $purchasedItem)
     {
         //
     }

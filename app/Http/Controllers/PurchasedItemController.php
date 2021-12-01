@@ -2,33 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
-use App\Http\Resources\UserCollection;
+use App\Models\PurchasedItem;
+use App\Http\Resources\PurchasedItemCollection;
 
-class UserController extends Controller
+class PurchasedItemController extends Controller
 {
-    /**
+        /**
      * Create the controller instance.
      *
      * @return void
      */
     public function __construct()
     {
-        $this->authorizeResource(User::class, 'user');
+        // $this->authorizeResource(PurchasedItem::class, 'purchased-item');
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return UserCollection
+     * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
-        $users = User::query();
-        $users = $this->filter($users, $request);
-        $users = $users->with('roles')->get();
-        return new UserCollection($users);
+        $items = PurchasedItem::query();
+        $items = $this->filter($items, $request);
+        return new PurchasedItemCollection($items->get());
     }
 
     /**
@@ -39,21 +38,21 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate(User::$rules);
-        $user = User::create($validated);
+        $validated = $request->validate(PurchasedItem::$rules);
+        $item = PurchasedItem::create($validated);
         return response()->json([
-            'data' => $user,
+            'data' => $item,
             'message' => 'create_success',
-        ]);
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  User  $user
+     * @param  Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show(PurchasedItem $purchasedItem)
     {
         //
     }
@@ -62,13 +61,13 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  User  $user
+     * @param  PurchasedItem  $purchasedItem
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, PurchasedItem $purchasedItem)
     {
-        $validated = $request->validate(User::$rules);
-        $user->update($validated);
+        $validated = $request->validate(PurchasedItem::$rules);
+        $purchasedItem->update($validated);
         return response()->json([
             'message' => 'update_success',
         ]);
@@ -77,12 +76,12 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  User  $user
+     * @param  PurchasedItem  $purchasedItem
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(PurchasedItem $purchasedItem)
     {
-        $user->delete();
+        $purchasedItem->delete();
         return response()->json([
             'message' => 'delete_success',
         ]);

@@ -12,21 +12,19 @@ services:
       - laravel-erp
 
   db:
-    image: mysql:5.7
+    image: postgres
     restart: unless-stopped
     volumes:
       - dbdata:/var/lib/mysql
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_USER: ${DB_USERNAME}
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USERNAME}
     networks:
       - laravel-erp
 
   webserver:
+    platform: linux/amd64 # This is for macos M1
     image: nginx:alpine
     restart: unless-stopped
     ports:
@@ -34,18 +32,6 @@ services:
     volumes:
       - ./:/var/www
       - ./build/nginx:/etc/nginx/conf.d/
-    networks:
-      - laravel-erp
-
-  phpmyadmin:
-    image: phpmyadmin
-    restart: unless-stopped
-    ports:
-      - 8080:80
-    environment:
-      PMA_HOST: db
-      PMA_USER: root
-      PMA_PASSWORD: ${DB_PASSWORD}
     networks:
       - laravel-erp
 

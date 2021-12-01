@@ -6,11 +6,12 @@ use Exception;
 use App\Traits\Sluggable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PostCategory extends Model
 {
-    use HasFactory, Sluggable;
+    use HasFactory, Sluggable, SoftDeletes;
 
     protected $generateSlugFrom = 'name';
 
@@ -41,6 +42,16 @@ class PostCategory extends Model
             DB::beginTransaction();
             try {
                 $category->updateTreePath();
+            } catch (Exception $e) {
+                DB::rollback();
+            }
+            DB::commit();
+        });
+
+        static::deleted(function ($category) {
+            DB::beginTransaction();
+            try {
+                $category->deleteTreePath();
             } catch (Exception $e) {
                 DB::rollback();
             }
@@ -85,16 +96,18 @@ class PostCategory extends Model
         return $this
             ->belongsToMany(self::class, 'tree_paths', 'ancestor_id', 'descendant_id')
             ->wherePivot('entity_type', self::class)
-            ->whereRaw('
+            ->whereRaw("
                 tree_paths.ancestor_id <> tree_paths.descendant_id AND
                 tree_paths.ancestor_id = (
                     SELECT MAX(tp.ancestor_id)
                     FROM tree_paths AS tp
-                    WHERE tp.descendant_id = tree_paths.descendant_id AND 
+                    WHERE 
+                        tp.deleted_at IS NULL AND 
+                        tp.descendant_id = tree_paths.descendant_id AND 
                         tp.descendant_id <> tp.ancestor_id 
                     LIMIT 1
                 )
-            ')
+            ")
             ->with('descendants');
     }
 
@@ -131,5 +144,16 @@ class PostCategory extends Model
             ->delete();
 
         $this->createTreePath();
+    }
+
+    /**
+     * TODO
+     */
+    private function deleteTreePath()
+    {
+        TreePath::where('entity_type', self::class)
+            ->where('descendant_id', $this->id)
+            ->orWhere('ancestor_id', $this->id)
+            ->delete();
     }
 }
