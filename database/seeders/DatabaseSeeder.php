@@ -19,12 +19,6 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->dataFixture();
-
-        $this->call([
-            UserSeeder::class,
-            PostCategorySeeder::class,
-            PostSeeder::class,
-        ]);
     }
 
     private function dataFixture()
